@@ -1,0 +1,76 @@
+
+IDEA FOR DETERMINSTIC ALGORITHM IN PYTHON
+
+
+
+// sagar check it from here 
+
+def deterministicAlgo(array, k):
+
+    """
+    divides the array into groups of five and finds the median recursively
+    """
+    global counter2 
+    counter2 = counter2 + 1
+
+    # condition to stop reaching the max limit of recursion 
+    if len(array) <= 10:
+
+        array.sort()
+        return array[k]
+ 
+    # Partition the array into list_of_sub_groups with a maximum of 5 elements
+
+    size_of_sub_group = 5
+    list_of_sub_groups = [] 
+    num_of_medians = len(array) / size_of_sub_group
+    if (len(array) % size_of_sub_group) > 0:
+        num_of_medians += 1 
+    for i in range(num_of_medians):
+        beg = i * size_of_sub_group
+        end = min(len(array), beg + size_of_sub_group)
+        subset = array[beg:end]
+        list_of_sub_groups.append(subset)
+ 
+
+    list_of_medians = [] 
+    for subset in list_of_sub_groups:
+        median = deterministicAlgo(subset, len(subset)/2)
+        list_of_medians.append(median)
+ 
+    # recursively calculates the median of medians
+    median_of_medians = deterministicAlgo(list_of_medians, len(list_of_medians)/2)
+    pivot = median_of_medians  
+ 
+    less_than_pivot = []
+    greater_than_pivot = []
+    equal_to_pivot = []
+    for item in array:
+        if item < pivot:
+            less_than_pivot.append(item)
+        elif item > pivot:
+            greater_than_pivot.append(item)
+        else:
+            equal_to_pivot.append(item)
+ 
+
+    if k < len(less_than_pivot):
+        return deterministicAlgo(less_than_pivot, k)
+other
+
+    elif k < len(less_than_pivot) + len(equal_to_pivot):
+        return equal_to_pivot[0]
+    else:
+        new_k = k - (len(less_than_pivot) + len(equal_to_pivot))
+        return deterministicAlgo(greater_than_pivot, new_k)
+
+
+if __name__ == "__main__":
+
+     num = 10000
+
+     array = [random.randint(1,1000) for i in range(num)]
+
+     random.shuffle(array)
+     kvalue = deterministicAlgo(array, 500)
+     print("k = 500th value is : "+str(kvalue))
